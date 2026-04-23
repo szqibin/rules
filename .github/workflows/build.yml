@@ -1,0 +1,76 @@
+name: Rules Auto-Build
+on:
+  # push: # 注释掉自动触发，日后取消注释即可启用
+  #   branches:
+  #     - program
+  #   paths:
+  #     - 'config.json'
+  #     - 'custom/**'
+  
+  schedule:
+    - cron: '0 2 * * *' # 每天凌晨2点定时运行
+  workflow_dispatch:    # 支持手动触发
+
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source
+        uses: actions/checkout@v4
+        with:
+          ref: program # 锁定从 program 分支获取代码
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.10'
+
+      - name: Install dependencies
+        run: pip install requests
+
+      - name: Run Merge Script
+        run: python scripts/merge.py
+
+      - name: Setup Mihomo
+        run: |
+          URL=$(curl -s https://api.github.com/repos/MetaCubeX/mihomo/releases/latest | grep "browser_download_url.*linux-amd64-v" | cut -d '"' -f 4 | head -n 1)
+          curl -L -o mihomo.gz "$URL"
+          gunzip mihomo.gz && chmod +x mihomo
+
+      - name: Prepare Deployment Directory
+        run: |
+          mkdir -p deploy/mrs   # 存放生成的二进制文件
+          mkdir -p deploy/raw   # 存放原始合并后的文本
+
+      - name: Compile and Copy
+        run: |
+          for file in source/*.list; do
+            filename=$(basename "$file" .list)
+            # 自动识别类型
+            if [ -f "source/${filename}.type" ]; then
+              ptype=$(cat "source/${filename}.type")
+            else
+              ptype="domain"
+            fi
+            
+            # 编译到 mrs 目录
+            ./mihomo convert-ruleset "$ptype" text "$file" "deploy/mrs/${filename}.mrs"
+            
+            # 复制原始文本到 raw 目录
+            cp "$file" "deploy/raw/${filename}.txt"
+          done
+
+      - name: Deploy to Release Branch
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          # 同仓库操作，自带的 GITHUB_TOKEN 即可满足权限
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: release
+          publish_dir: ./deploy
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
+          commit_message: "Build rules: $(date +'%Y-%m-%d %H:%M')"
+          keep_files: false # 每次清理 release 分支，保持干净
