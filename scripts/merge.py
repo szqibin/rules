@@ -13,7 +13,7 @@ def is_valid_ip_or_cidr(entry):
 
 def process_content(content, payload_type):
     merged = set()
-    # 提取内容：支持 YAML 列表 (- item) 和纯文本行
+    # 兼容 YAML 列表格式和纯文本行
     entries = re.findall(r"(?:^-\s*|payload:\s*-\s*|^\s*)(['\"]?)([^'\"\s#]+)\1", content, re.MULTILINE)
     for _, e in entries:
         cleaned = clean_entry(e)
@@ -22,7 +22,7 @@ def process_content(content, payload_type):
             if is_valid_ip_or_cidr(cleaned):
                 merged.add(cleaned)
         else:
-            # 自动去掉可能导致编译失败的 +. 前缀
+            # 自动处理前缀，behavior: domain 模式下纯域名兼容性最好
             cleaned = cleaned.lstrip('+.')
             merged.add(cleaned)
     return merged
@@ -30,11 +30,11 @@ def process_content(content, payload_type):
 def save_source(name, entries, ptype):
     if not entries: return
     os.makedirs("source", exist_ok=True)
-    # 统一保存为纯文本 .list 格式供 Mihomo 编译
+    # 保存为纯文本 .list 供编译
     with open(f"source/{name}.list", "w", encoding='utf-8') as f:
         for entry in sorted(list(entries)):
             f.write(f"{entry}\n")
-    # 保存类型标识供 build.yml 读取
+    # 记录类型
     with open(f"source/{name}.type", "w", encoding='utf-8') as f:
         f.write(ptype)
 
@@ -43,13 +43,12 @@ def main():
     with open('config.json', 'r', encoding='utf-8') as f:
         config = json.load(f)
 
-    # 1. 处理 config.json 定义的合并分类
+    # 1. 处理 config.json 中的分类
     for cat, settings in config.get('categories', {}).items():
         is_ip = any(x in cat.lower() for x in ['cidr', 'lan', 'ip'])
         payload_type = "ipcidr" if is_ip else "domain"
         merged_entries = set()
         
-        # 抓取远程
         for url in settings.get('remote_urls', []):
             try:
                 resp = requests.get(url, timeout=10)
@@ -57,7 +56,7 @@ def main():
                     merged_entries.update(process_content(resp.text, payload_type))
             except: pass
         
-        # 合并本地 (读取 custom 目录下的 .txt)
+        # 本地合并逻辑：读取 custom/{cat}.txt
         if settings.get('merge_local', False):
             local_path = os.path.join("custom", f"{cat}.txt")
             if os.path.exists(local_path):
@@ -65,12 +64,12 @@ def main():
                     merged_entries.update(process_content(f.read(), payload_type))
         save_source(cat, merged_entries, payload_type)
 
-    # 2. 处理 custom 目录下其他所有独立的 .txt 文件
+    # 2. 处理 custom 下其他独立的 .txt 文件
     if os.path.exists("custom"):
         for file in os.listdir("custom"):
             if file.endswith(".txt"):
                 base_name = file.replace(".txt", "")
-                # 如果这个文件不是 config.json 里已处理过的分类，则单独生成 custom_ 前缀规则
+                # 如果这个文件不是 config.json 里已合并的分类，则独立生成
                 if base_name not in config.get('categories', {}):
                     is_ip = any(x in base_name.lower() for x in ['cidr', 'lan', 'ip'])
                     payload_type = "ipcidr" if is_ip else "domain"
