@@ -1,0 +1,155 @@
+{
+  "categories": {
+    "ai": {
+      "remote_urls": [
+        "https://raw.githubusercontent.com/666OS/rules/release/mihomo/domain/AI.txt"
+      ],
+      "merge_local": false
+    },
+    "direct": {
+      "remote_urls": [
+        "https://raw.githubusercontent.com/Loyalsoldier/clash-rules/release/direct.txt",
+        "https://raw.githubusercontent.com/666OS/rules/release/mihomo/domain/Direct.txt"
+      ],
+      "merge_local": true
+    },
+    "proxy": {
+      "remote_urls": [
+        "https://raw.githubusercontent.com/Loyalsoldier/clash-rules/release/proxy.txt",
+        "https://raw.githubusercontent.com/666OS/rules/release/mihomo/domain/Proxy.txt"
+      ],
+      "merge_local": true
+    },
+    "gfw": {
+      "remote_urls": [
+        "https://raw.githubusercontent.com/Loyalsoldier/clash-rules/release/gfw.txt"
+      ],
+      "merge_local": false
+    },
+    "tld-not-cn": {
+      "remote_urls": [
+        "https://raw.githubusercontent.com/Loyalsoldier/clash-rules/release/tld-not-cn.txt"
+      ],
+      "merge_local": false
+    },
+    "reject": {
+      "remote_urls": [
+        "https://raw.githubusercontent.com/Loyalsoldier/clash-rules/release/reject.txt",
+        "https://raw.githubusercontent.com/666OS/rules/release/mihomo/domain/Advertising.txt"
+      ],
+      "merge_local": true
+    },
+    "private": {
+      "remote_urls": [
+        "https://raw.githubusercontent.com/Loyalsoldier/clash-rules/release/private.txt",
+        "https://raw.githubusercontent.com/666OS/rules/release/mihomo/domain/Private.txt"
+      ],
+      "merge_local": false
+    },
+    "apple-cn": {
+      "remote_urls": [
+        "https://raw.githubusercontent.com/Loyalsoldier/clash-rules/release/apple.txt",
+        "https://raw.githubusercontent.com/666OS/rules/release/mihomo/domain/AppleCN.txt"
+      ],
+      "merge_local": false
+    },
+    "icloud": {
+      "remote_urls": [
+        "https://raw.githubusercontent.com/Loyalsoldier/clash-rules/release/icloud.txt"
+      ],
+      "merge_local": false
+    },
+    "google": {
+      "remote_urls": [
+        "https://raw.githubusercontent.com/666OS/rules/release/mihomo/domain/Google.txt"
+      ],
+      "merge_local": false
+    },
+    "google-cn": {
+      "remote_urls": [
+        "https://raw.githubusercontent.com/Loyalsoldier/clash-rules/release/google.txt"
+      ],
+      "merge_local": false
+    },
+    "cloudflare": {
+      "remote_urls": [
+        "https://raw.githubusercontent.com/666OS/rules/release/mihomo/domain/Cloudflare.txt"
+      ],
+      "merge_local": false
+    },
+    "github": {
+      "remote_urls": [
+        "https://raw.githubusercontent.com/666OS/rules/release/mihomo/domain/GitHub.txt"
+      ],
+      "merge_local": false
+    },
+    "tiktok": {
+      "remote_urls": [
+        "https://raw.githubusercontent.com/666OS/rules/release/mihomo/domain/TikTok.txt"
+      ],
+      "merge_local": false
+    },
+    "lancidr": {
+      "remote_urls": [
+        "https://raw.githubusercontent.com/Loyalsoldier/clash-rules/release/lancidr.txt",
+        "https://raw.githubusercontent.com/666OS/rules/release/mihomo/ip/Private.txt"
+      ],
+      "merge_local": false
+    },
+    "directcidr": {
+      "remote_urls": [
+        "https://raw.githubusercontent.com/Loyalsoldier/clash-rules/release/cncidr.txt",
+        "https://raw.githubusercontent.com/666OS/rules/release/mihomo/ip/China.txt"
+      ],
+      "merge_local": true
+    },
+    "rejectcidr": {
+      "remote_urls": [
+        "https://raw.githubusercontent.com/666OS/rules/release/mihomo/ip/Advertising.txt"
+      ],
+      "merge_local": true
+    },
+    "aicidr": {
+      "remote_urls": [
+        "https://raw.githubusercontent.com/666OS/rules/release/mihomo/ip/AI.txt"
+      ],
+      "merge_local": false
+    },
+    "googlecidr": {
+      "remote_urls": [
+        "https://raw.githubusercontent.com/666OS/rules/release/mihomo/ip/Google.txt"
+      ],
+      "merge_local": false
+    },
+    "apple-cn-cidr": {
+      "remote_urls": [
+        "https://raw.githubusercontent.com/666OS/rules/release/mihomo/ip/AppleCN.txt"
+      ],
+      "merge_local": false
+    },
+    "cloudflarecidr": {
+      "remote_urls": [
+        "https://raw.githubusercontent.com/666OS/rules/release/mihomo/ip/Cloudflare.txt"
+      ],
+      "merge_local": false
+    },
+    "githubcidr": {
+      "remote_urls": [
+        "https://raw.githubusercontent.com/666OS/rules/release/mihomo/ip/GitHub.txt"
+      ],
+      "merge_local": false
+    },
+    "tiktokcidr": {
+      "remote_urls": [
+        "https://raw.githubusercontent.com/666OS/rules/release/mihomo/ip/TikTok.txt"
+      ],
+      "merge_local": false
+    },
+    "proxycidr": {
+      "remote_urls": [
+        "https://raw.githubusercontent.com/666OS/rules/release/mihomo/ip/Proxy.txt"
+      ],
+      "merge_local": true
+    }
+  }
+}
