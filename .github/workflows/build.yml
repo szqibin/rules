@@ -1,4 +1,4 @@
-name: Mihomo Rules Auto-Build
+name: Rules Auto-Build
 on:
   # push: # 注释掉自动触发，日后取消注释即可启用
   #   branches:
