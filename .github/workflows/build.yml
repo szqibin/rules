@@ -62,7 +62,10 @@ jobs:
             # 复制原始文本到 raw 目录
             cp "$file" "deploy/raw/${filename}.txt"
           done
-
+      - name: Get current date
+        id: get_date
+        run: echo "today=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')" >> $GITHUB_OUTPUT
+        
       - name: Deploy to Release Branch
         uses: peaceiris/actions-gh-pages@v3
         with:
@@ -72,5 +75,5 @@ jobs:
           publish_dir: ./deploy
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
-          commit_message: "Build rules: $(date +'%Y-%m-%d %H:%M')"
+          commit-message: "Build Rules: ${{ steps.get_date.outputs.today }}"
           keep_files: false # 每次清理 release 分支，保持干净
