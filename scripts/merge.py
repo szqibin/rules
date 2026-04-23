@@ -24,7 +24,7 @@ def process_content(content, payload_type):
                 merged.add(cleaned)
         else:
             # 自动去掉 +. 前缀以提高编译兼容性
-            cleaned = cleaned.lstrip('+.')
+            # cleaned = cleaned.lstrip('+.')
             merged.add(cleaned)
     return merged
 
