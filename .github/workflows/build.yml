@@ -1,15 +1,16 @@
 name: Mihomo Rules Auto-Build
 on:
-  push:
-    paths:
-      - 'config.json'
-      - 'custom/**'
-      - 'scripts/**'
+  # push:  # 已注释自动触发
+  #   branches:
+  #     - program
+  #   paths:
+  #     - 'config.json'
+  #     - 'custom/**'
+  
   schedule:
-    - cron: '0 2 * * *'
-  workflow_dispatch:
+    - cron: '0 2 * * *' # 每天凌晨2点定时运行
+  workflow_dispatch:    # 支持手动点击运行
 
-# 设置环境变量以提前适配 Node.js 24
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
@@ -18,11 +19,11 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Source
-        # 建议检查是否有 @v5 或更高版本，目前先沿用 v4 并配合环境变量
         uses: actions/checkout@v4
+        with:
+          ref: program # 从 program 分支拉取
 
       - name: Set up Python
-        # 建议检查是否有 @v6 或更高版本，目前先沿用 v5 并配合环境变量
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
@@ -39,9 +40,13 @@ jobs:
           curl -L -o mihomo.gz "$URL"
           gunzip mihomo.gz && chmod +x mihomo
 
-      - name: Compile to MRS
+      - name: Prepare Deployment Directory
         run: |
-          mkdir -p build
+          mkdir -p deploy/mrs   # 改为 mrs 目录
+          mkdir -p deploy/raw   # 存放原始文本
+
+      - name: Compile and Copy
+        run: |
           for file in source/*.list; do
             filename=$(basename "$file" .list)
             if [ -f "source/${filename}.type" ]; then
@@ -49,24 +54,20 @@ jobs:
             else
               ptype="domain"
             fi
-            echo "Compiling $filename as $ptype..."
-            ./mihomo convert-ruleset "$ptype" text "$file" "build/${filename}.mrs"
+            # 编译到 mrs 目录
+            ./mihomo convert-ruleset "$ptype" text "$file" "deploy/mrs/${filename}.mrs"
+            # 复制原始文本到 raw 目录
+            cp "$file" "deploy/raw/${filename}.txt"
           done
-     
-      - name: Get current date
-        id: get_date
-        run: echo "today=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')" >> $GITHUB_OUTPUT
 
-      - name: Deploy to Release Repo
-        # 注意：此 Action 内部可能也使用了 Node 20，若报错请检查作者更新
-        uses: cpina/github-action-push-to-another-repository@main
-        env:
-          API_TOKEN_GITHUB: ${{ secrets.MY_DEPLOY_TOKEN }}
+      - name: Deploy to Release Branch
+        uses: peaceiris/actions-gh-pages@v3
         with:
-          source-directory: 'build'
-          destination-github-username: 'szqibin'
-          destination-repository-name: 'mihomo-rules-release'
-          user-email: 'panda0206@gmail.com'
-          target-branch: 'main'
-          target-directory: 'release' # MRS文件将存放在公有仓库的 release/ 目录下
-          commit-message: "Build Rules: ${{ steps.get_date.outputs.today }}"
+          # 同一仓库操作，直接使用 GITHUB_TOKEN，无需 Secret
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_branch: release
+          publish_dir: ./deploy
+          user_name: 'github-actions[bot]'
+          user_email: 'github-actions[bot]@users.noreply.github.com'
+          commit_message: "Auto-build rules at $(date +'%Y-%m-%d %H:%M')"
+          keep_files: false # 每次部署清空旧文件，确保分支干净
