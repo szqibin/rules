@@ -1,15 +1,8 @@
-name: Rules Auto-Build
+name: Mihomo Rules Auto-Build
 on:
-  # push: # 注释掉自动触发，日后取消注释即可启用
-  #   branches:
-  #     - program
-  #   paths:
-  #     - 'config.json'
-  #     - 'custom/**'
-  
   schedule:
-    - cron: '0 2 * * *' # 每天凌晨2点定时运行
-  workflow_dispatch:    # 支持手动触发
+    - cron: '0 2 * * *'
+  workflow_dispatch:
 
 env:
   FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
@@ -17,11 +10,14 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
+    # 赋予推送权限
+    permissions:
+      contents: write
     steps:
       - name: Checkout Source
         uses: actions/checkout@v4
         with:
-          ref: program # 锁定从 program 分支获取代码
+          ref: program
 
       - name: Set up Python
         uses: actions/setup-python@v5
@@ -42,38 +38,31 @@ jobs:
 
       - name: Prepare Deployment Directory
         run: |
-          mkdir -p deploy/mrs   # 存放生成的二进制文件
-          mkdir -p deploy/raw   # 存放原始合并后的文本
+          mkdir -p deploy/mrs
+          mkdir -p deploy/raw
 
       - name: Compile and Copy
         run: |
           for file in source/*.list; do
             filename=$(basename "$file" .list)
-            # 自动识别类型
-            if [ -f "source/${filename}.type" ]; then
-              ptype=$(cat "source/${filename}.type")
-            else
-              ptype="domain"
-            fi
-            
-            # 编译到 mrs 目录
+            [ -f "source/${filename}.type" ] && ptype=$(cat "source/${filename}.type") || ptype="domain"
             ./mihomo convert-ruleset "$ptype" text "$file" "deploy/mrs/${filename}.mrs"
-            
-            # 复制原始文本到 raw 目录
             cp "$file" "deploy/raw/${filename}.txt"
           done
+
+      # 时间修复方案
       - name: Get current date
         id: get_date
         run: echo "today=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')" >> $GITHUB_OUTPUT
-        
+
       - name: Deploy to Release Branch
         uses: peaceiris/actions-gh-pages@v3
         with:
-          # 同仓库操作，自带的 GITHUB_TOKEN 即可满足权限
           github_token: ${{ secrets.GITHUB_TOKEN }}
           publish_branch: release
           publish_dir: ./deploy
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
-          commit-message: "Build Rules: ${{ steps.get_date.outputs.today }}"
-          keep_files: false # 每次清理 release 分支，保持干净
+          # 使用 outputs 引用时间
+          commit_message: "Auto-build rules at ${{ steps.get_date.outputs.today }}"
+          keep_files: false
