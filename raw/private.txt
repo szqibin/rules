@@ -215,7 +215,6 @@
 +.us.ntp.org.cn
 +.xnotify.xboxlive.com
 +.zte.home
--
 asusrouter.com
 instant.arubanetworks.com
 local.adguard.org
