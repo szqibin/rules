@@ -89,6 +89,12 @@
       ],
       "merge_local": false
     },
+    "telegram": {
+      "remote_urls": [
+        "https://raw.githubusercontent.com/666OS/rules/release/mihomo/domain/Telegram.txt"
+      ],
+      "merge_local": false
+    },
     "lancidr": {
       "remote_urls": [
         "https://raw.githubusercontent.com/Loyalsoldier/clash-rules/release/lancidr.txt",
@@ -148,6 +154,14 @@
     "proxycidr": {
       "remote_urls": [
         "https://raw.githubusercontent.com/666OS/rules/release/mihomo/ip/Proxy.txt"
+      ],
+      "merge_local": true
+    },
+    ,
+    "telegramcidr": {
+      "remote_urls": [
+        "https://raw.githubusercontent.com/666OS/rules/release/mihomo/ip/Telegram.txt",
+        "https://cdn.jsdelivr.net/gh/Loyalsoldier/clash-rules@release/telegramcidr.txt"
       ],
       "merge_local": true
     }
