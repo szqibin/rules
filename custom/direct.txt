@@ -12,5 +12,7 @@
 +.ycfishing.com
 +.ycyuju.com
 +.tailscale.com
++.tailscale.net
 +.tailscale.io
++.tailc79eef.ts.net
 +.synology.com
