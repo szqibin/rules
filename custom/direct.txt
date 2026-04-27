@@ -16,3 +16,14 @@
 +.tailscale.io
 +.tailc79eef.ts.net
 +.synology.com
++.vultr.com
++.vultrobjects.com
++.vultrusercontent.com
++.choopa.com
++.choopa.net
++.constant.com
++.racknerd.com
++.racknerd.tv
++.racknerd.net
++.rn.yt
++.nerdvm.com
