@@ -167,6 +167,7 @@
 +.youmind.ai
 +.youmind.com
 +.youmind.site
++.zed.dev
 ai.google.dev
 aistudio.google.com
 alkalicore-pa.clients6.google.com
