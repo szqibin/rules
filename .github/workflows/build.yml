@@ -10,7 +10,6 @@ env:
 jobs:
   build:
     runs-on: ubuntu-latest
-    # 赋予推送权限
     permissions:
       contents: write
     steps:
@@ -30,27 +29,51 @@ jobs:
       - name: Run Merge Script
         run: python scripts/merge.py
 
-      - name: Setup Mihomo
+      - name: Setup Core Binaries
         run: |
-          URL=$(curl -s https://api.github.com/repos/MetaCubeX/mihomo/releases/latest | grep "browser_download_url.*linux-amd64-v" | cut -d '"' -f 4 | head -n 1)
-          curl -L -o mihomo.gz "$URL"
+          # 1. 下载并配置 Mihomo
+          M_URL=$(curl -s https://api.github.com/repos/MetaCubeX/mihomo/releases/latest | grep "browser_download_url.*linux-amd64-v" | cut -d '"' -f 4 | head -n 1)
+          curl -L -o mihomo.gz "$M_URL"
           gunzip mihomo.gz && chmod +x mihomo
+          
+          # 2. 下载并配置 Sing-box
+          S_URL=$(curl -s https://api.github.com/repos/SagerNet/sing-box/releases/latest | grep "browser_download_url.*linux-amd64.tar.gz" | cut -d '"' -f 4 | head -n 1)
+          curl -L -o sing-box.tar.gz "$S_URL"
+          tar -xzf sing-box.tar.gz
+          mv sing-box-*/sing-box ./
+          chmod +x sing-box
 
       - name: Prepare Deployment Directory
         run: |
-          mkdir -p deploy/mrs
-          mkdir -p deploy/raw
+          # 按照要求建立隔离目录
+          mkdir -p deploy/mihomo/raw
+          mkdir -p deploy/mihomo/rule-set
+          mkdir -p deploy/sing-box/raw
+          mkdir -p deploy/sing-box/rule-set
 
       - name: Compile and Copy
         run: |
-          for file in source/*.list; do
-            filename=$(basename "$file" .list)
-            [ -f "source/${filename}.type" ] && ptype=$(cat "source/${filename}.type") || ptype="domain"
-            ./mihomo convert-ruleset "$ptype" text "$file" "deploy/mrs/${filename}.mrs"
-            cp "$file" "deploy/raw/${filename}.txt"
-          done
+          # 1. 编译并复制 Mihomo 规则
+          if [ -d "source/mihomo" ]; then
+            for file in source/mihomo/*.list; do
+              [ -e "$file" ] || continue
+              filename=$(basename "$file" .list)
+              [ -f "source/mihomo/${filename}.type" ] && ptype=$(cat "source/mihomo/${filename}.type") || ptype="domain"
+              ./mihomo convert-ruleset "$ptype" text "$file" "deploy/mihomo/rule-set/${filename}.mrs"
+              cp "$file" "deploy/mihomo/raw/${filename}.txt"
+            done
+          fi
 
-      # 时间修复方案
+          # 2. 编译并复制 Sing-box 规则
+          if [ -d "source/sing-box" ]; then
+            for file in source/sing-box/*.json; do
+              [ -e "$file" ] || continue
+              filename=$(basename "$file" .json)
+              ./sing-box rule-set compile "$file" -o "deploy/sing-box/rule-set/${filename}.srs"
+              cp "$file" "deploy/sing-box/raw/${filename}"
+            done
+          fi
+
       - name: Get current date
         id: get_date
         run: echo "today=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')" >> $GITHUB_OUTPUT
@@ -63,6 +86,5 @@ jobs:
           publish_dir: ./deploy
           user_name: 'github-actions[bot]'
           user_email: 'github-actions[bot]@users.noreply.github.com'
-          # 使用 outputs 引用时间
-          commit_message: "Auto-build rules at ${{ steps.get_date.outputs.today }}"
+          commit_message: "Auto-build dual-core rules at ${{ steps.get_date.outputs.today }}"
           keep_files: false
