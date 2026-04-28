@@ -70,7 +70,7 @@ jobs:
               [ -e "$file" ] || continue
               filename=$(basename "$file" .json)
               ./sing-box rule-set compile "$file" -o "deploy/sing-box/rule-set/${filename}.srs"
-              cp "$file" "deploy/sing-box/raw/${filename}"
+              cp "$file" "deploy/sing-box/raw/${filename}.json"
             done
           fi
 
