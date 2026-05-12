@@ -71,7 +71,27 @@ def save_source(name, entries, ptype):
     with open(f"source/sing-box/{name}.json", "w", encoding='utf-8') as f:
         json.dump(sbox_json, f, indent=2, ensure_ascii=False)
 
+def fetch_fakeip_filter():
+    """新增模块：直接从上游获取 fakeip-filter.list 并注入 Mihomo 源文件夹"""
+    print("Fetching upstream fakeip-filter.list...")
+    try:
+        url = "https://raw.githubusercontent.com/wwqgtxx/clash-rules/release/fakeip-filter.list"
+        resp = requests.get(url, timeout=10)
+        if resp.status_code == 200:
+            os.makedirs("source/mihomo", exist_ok=True)
+            # 写入 Mihomo 源码目录，依靠原有的 Action 循环自动完成 mrs 编译
+            with open("source/mihomo/fakeip-filter.list", "w", encoding='utf-8') as f:
+                f.write(resp.text)
+            with open("source/mihomo/fakeip-filter.type", "w", encoding='utf-8') as f:
+                f.write("domain")
+            print("Successfully added fakeip-filter to Mihomo source.")
+    except Exception as e:
+        print(f"Failed to fetch fakeip-filter: {e}")
+
 def main():
+    # 优先执行独立抓取任务
+    fetch_fakeip_filter()
+    
     if not os.path.exists('config.json'): return
     with open('config.json', 'r', encoding='utf-8') as f:
         config = json.load(f)
