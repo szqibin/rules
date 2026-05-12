@@ -2,6 +2,7 @@ import requests
 import re
 import os
 import json
+import ipaddress # 引入原生库，用于严格校验 IP 格式
 
 def clean_entry(entry):
     # 移除指令前缀并清理引号
@@ -9,8 +10,13 @@ def clean_entry(entry):
     return entry.strip().strip("'").strip('"')
 
 def is_valid_ip_or_cidr(entry):
-    # 判断是否为合法的 IP 或 CIDR 格式
-    return any(char.isdigit() for char in entry) and ('.' in entry or ':' in entry)
+    # 严格判断是否为合法的 IP 或 CIDR 格式，根治由于错误判断导致 Mihomo 崩溃的问题
+    clean_ip = entry.split(',')[0].strip()
+    try:
+        ipaddress.ip_network(clean_ip, strict=False)
+        return True
+    except ValueError:
+        return False
 
 def process_content(content, payload_type):
     merged = set()
@@ -71,27 +77,7 @@ def save_source(name, entries, ptype):
     with open(f"source/sing-box/{name}.json", "w", encoding='utf-8') as f:
         json.dump(sbox_json, f, indent=2, ensure_ascii=False)
 
-def fetch_fakeip_filter():
-    """新增模块：直接从上游获取 fakeip-filter.list 并注入 Mihomo 源文件夹"""
-    print("Fetching upstream fakeip-filter.list...")
-    try:
-        url = "https://raw.githubusercontent.com/wwqgtxx/clash-rules/release/fakeip-filter.list"
-        resp = requests.get(url, timeout=10)
-        if resp.status_code == 200:
-            os.makedirs("source/mihomo", exist_ok=True)
-            # 写入 Mihomo 源码目录，依靠原有的 Action 循环自动完成 mrs 编译
-            with open("source/mihomo/fakeip-filter.list", "w", encoding='utf-8') as f:
-                f.write(resp.text)
-            with open("source/mihomo/fakeip-filter.type", "w", encoding='utf-8') as f:
-                f.write("domain")
-            print("Successfully added fakeip-filter to Mihomo source.")
-    except Exception as e:
-        print(f"Failed to fetch fakeip-filter: {e}")
-
 def main():
-    # 优先执行独立抓取任务
-    fetch_fakeip_filter()
-    
     if not os.path.exists('config.json'): return
     with open('config.json', 'r', encoding='utf-8') as f:
         config = json.load(f)
@@ -99,7 +85,8 @@ def main():
     # 处理 config.json
     print("Processing config.json categories...")
     for cat, settings in config.get('categories', {}).items():
-        is_ip = any(x in cat.lower() for x in ['cidr', 'lan', 'ip'])
+        # 修正：判断类型时排除 'fakeip' 关键字，防止将其误认为 ipcidr
+        is_ip = any(x in cat.lower() for x in ['cidr', 'lan', 'ip']) and 'fakeip' not in cat.lower()
         payload_type = "ipcidr" if is_ip else "domain"
         merged_entries = set()
         
@@ -123,7 +110,9 @@ def main():
         for file in os.listdir("custom"):
             if file.endswith(".txt"):
                 base_name = file.replace(".txt", "")
-                is_ip = any(x in base_name.lower() for x in ['cidr', 'lan', 'ip'])
+                
+                # 修正：处理 custom 目录里的文件时，也要排除 fakeip 关键字
+                is_ip = any(x in base_name.lower() for x in ['cidr', 'lan', 'ip']) and 'fakeip' not in base_name.lower()
                 payload_type = "ipcidr" if is_ip else "domain"
                 
                 target_name = f"custom_{base_name}"
