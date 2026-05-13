@@ -27,3 +27,4 @@
 +.racknerd.net
 +.rn.yt
 +.nerdvm.com
++.secureserver.net
