@@ -78,13 +78,21 @@ jobs:
         id: get_date
         run: echo "today=$(TZ='Asia/Shanghai' date +'%Y-%m-%d %H:%M')" >> $GITHUB_OUTPUT
 
-      - name: Deploy to Release Branch
-        uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_branch: release
-          publish_dir: ./deploy
-          user_name: 'github-actions[bot]'
-          user_email: 'github-actions[bot]@users.noreply.github.com'
-          commit_message: "Auto-build dual-core rules at ${{ steps.get_date.outputs.today }}"
-          keep_files: false
+      - name: Deploy to Release Branch (Native Git)
+        run: |
+          cd deploy
+          
+          # 在 deploy 目录初始化一个全新的 git 仓库
+          git init
+          git checkout -b release
+          
+          # 配置机器人身份
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          
+          # 提交所有生成的文件
+          git add .
+          git commit -m "Auto-build dual-core rules at ${{ steps.get_date.outputs.today }}"
+          
+          # 强制推送到远程仓库的 release 分支（完全覆盖历史记录，防止仓库体积暴增）
+          git push -f https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.git release
