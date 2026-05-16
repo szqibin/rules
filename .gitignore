@@ -1,0 +1,7 @@
+# Ignore generated rules and deployment directories
+/source/
+/deploy/
+/mihomo
+/sing-box
+*.gz
+*.tar.gz
