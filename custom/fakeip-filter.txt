@@ -162,3 +162,5 @@ ps.res.netease.com
 +.gcloudsdk.com
 #ddns
 +.dynv6.net
++.tailscale.com
++.tailscale.io
