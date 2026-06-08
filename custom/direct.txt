@@ -28,3 +28,6 @@
 +.rn.yt
 +.nerdvm.com
 +.secureserver.net
++.hsbc.com.hk
++.hsbc.com
++.hsbc.com.cn
