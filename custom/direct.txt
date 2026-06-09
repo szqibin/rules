@@ -31,3 +31,4 @@
 +.hsbc.com.hk
 +.hsbc.com
 +.hsbc.com.cn
++.hsbc.edge.sdk.awswaf.com
