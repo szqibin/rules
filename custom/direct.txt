@@ -34,3 +34,4 @@
 +.hsbc.edge.sdk.awswaf.com
 +.ozon.ru
 +.ozone.ru
++.ozon.com
