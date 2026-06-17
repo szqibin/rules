@@ -32,3 +32,5 @@
 +.hsbc.com
 +.hsbc.com.cn
 +.hsbc.edge.sdk.awswaf.com
++.ozon.ru
++.ozone.ru
