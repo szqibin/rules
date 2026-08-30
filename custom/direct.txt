@@ -35,3 +35,5 @@
 +.ozon.ru
 +.ozone.ru
 +.ozon.com
++.wordpress.com
++.wordpress.org
