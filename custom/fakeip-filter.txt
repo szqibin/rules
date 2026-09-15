@@ -13,8 +13,6 @@
 time.*.com
 time.*.gov
 time.*.edu.cn
-time.*.apple.com
-time-ios.apple.com
 time1.*.com
 time2.*.com
 time3.*.com
@@ -110,12 +108,9 @@ heartbeat.belkin.com
 #ASUS Router
 *.router.asus.com
 #Apple Software Update Service
-mesu.apple.com
-swscan.apple.com
-swquery.apple.com
-swdownload.apple.com
-swcdn.apple.com
-swdist.apple.com
++.apple.com
++.cdn-apple.com
++.mzstatic.com
 #Google
 lens.l.google.com
 na.b.g-tun.com
