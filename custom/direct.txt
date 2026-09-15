@@ -37,3 +37,6 @@
 +.ozon.com
 +.wordpress.com
 +.wordpress.org
++.apple.com
++.cdn-apple.com
++.mzstatic.com
