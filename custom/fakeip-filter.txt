@@ -160,3 +160,5 @@ ps.res.netease.com
 +.tailscale.com
 +.tailscale.io
 +.wordpress.org
++.cloudflarestorage.com
++.ollama.com
