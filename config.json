@@ -1,5 +1,13 @@
 {
   "categories": {
+    "priority-direct":{
+      "remote_urls": [],
+      "merge_local": true
+    },
+    "priority-proxy":{
+      "remote_urls": [],
+      "merge_local": true
+    },
     "ai": {
       "remote_urls": [
         "https://raw.githubusercontent.com/666OS/rules/release/mihomo/domain/AI.txt"
