@@ -1,1 +1,2 @@
-
+# NAME: 优先代理域名
++.torrentmac.net
