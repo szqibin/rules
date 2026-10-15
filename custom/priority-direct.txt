@@ -1,1 +1,2 @@
 # NAME: 优先直连域名
++.dianxiaomi.com
