@@ -162,3 +162,16 @@ ps.res.netease.com
 +.wordpress.org
 +.cloudflarestorage.com
 +.ollama.com
+#自家域名
++.20080312.xyz
++.20130106.xyz
++.19780206.xyz
++.countbass.com
++.fishingluresfactory.com
++.luremfg.com
++.metaljig.com
++.probasszone.com
++.sstackle.com
++.wsfishing.com
++.ycfishing.com
++.ycyuju.com
